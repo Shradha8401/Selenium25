@@ -1,10 +1,7 @@
 package SwagLabTests;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
@@ -18,6 +15,7 @@ import org.testng.annotations.Test;
 import javax.swing.*;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.List;
 
 public class widgetTests {
     WebDriver driver;
@@ -120,6 +118,48 @@ public class widgetTests {
         }else{
             Assert.fail("Incorrect file");
         }
+    }
+
+    @Test
+    public void testDynamicButtons() throws InterruptedException {
+        driver.get("https://demoqa.com/dynamic-properties");
+
+        WebElement enableAfterBtn = driver.findElement(By.id("enableAfter"));
+        WebElement visibleAfterBtn = driver.findElement(By.id("visibleAfter"));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        // --- wait conditions for the two diff buttons
+        wait.until(ExpectedConditions.elementToBeClickable(enableAfterBtn));
+        wait.until(ExpectedConditions.visibilityOf(visibleAfterBtn));
+
+    }
+
+    @Test
+    public void testAutoComplete() throws InterruptedException {
+        driver.get("https://jqueryui.com/autocomplete/");
+
+        // --- For <i-frame> we need to switch to frame
+        driver.switchTo().frame(driver.findElement(By.className("demo-frame")));
+        Thread.sleep(2000);
+
+        WebDriverWait wait=new WebDriverWait(driver,Duration.ofSeconds(10));
+
+        //--- input j in the search box
+        driver.findElement(By.id("tags")).sendKeys("j");
+        WebElement optionBox=driver.findElement(By.id("ui-id-1"));
+
+        // ---- wait until the options pop up
+        wait.until(ExpectedConditions.visibilityOf(optionBox));
+
+        List<WebElement> optionsList=optionBox.findElements(By.tagName("li"));
+
+        for(WebElement option:optionsList){
+            if(option.getText().equals("Java")){
+                option.click();
+                break;
+            }
+        }
+
     }
 
     @AfterTest
